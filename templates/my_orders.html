@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>我的订单 - 校园二手市场</title>
+    <style>
+        body { font-family: "微软雅黑"; margin: 40px; }
+        table { border-collapse: collapse; }
+        td, th { border: 1px solid #999; padding: 4px 10px; }
+        #result { margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <h2>我的订单</h2>
+    <table id="orders-table">
+        <tr><th>订单号</th><th>商品</th><th>数量</th><th>总价</th><th>下单时间</th></tr>
+        <tbody id="orders-list"></tbody>
+    </table>
+    <div id="result"></div>
+    <p><a href="/">返回首页</a></p>
+    <script>
+        async function loadOrders() {
+            var response = await fetch("/orders");
+            var result = await response.json();
+            if (result.code != 0) {
+                document.getElementById("result").innerText = "code=" + result.code + "，msg=" + result.msg;
+                return;
+            }
+            var rows = "";
+            for (var i = 0; i < result.data.length; i++) {
+                rows = rows + "<tr><td>" + result.data[i].order_id + "</td><td>" + result.data[i].title + "</td><td>" + result.data[i].quantity + "</td><td>" + result.data[i].total_price + "</td><td>" + result.data[i].created_at + "</td></tr>";
+            }
+            document.getElementById("orders-list").innerHTML = rows;
+        }
+        loadOrders();
+    </script>
+</body>
+</html>

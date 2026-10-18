@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>发布商品 - 校园二手市场</title>
+    <style>
+        body { font-family: "微软雅黑"; margin: 40px; }
+        input { margin: 5px 0; }
+        #result { margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <h2>发布商品</h2>
+    <form onsubmit="submitPublish(); return false;">
+        <p>商品名：<input type="text" id="title"></p>
+        <p>商品描述：<input type="text" id="description"></p>
+        <p>价格：<input type="text" id="price"></p>
+        <p>分类：<input type="text" id="category"></p>
+        <button id="publish-btn">发布</button>
+    </form>
+    <div id="result"></div>
+    <p><a href="/">返回首页</a></p>
+    <script>
+        async function submitPublish() {
+            var data = new URLSearchParams();
+            data.append("title", document.getElementById("title").value);
+            data.append("description", document.getElementById("description").value);
+            data.append("price", document.getElementById("price").value);
+            data.append("category", document.getElementById("category").value);
+            var response = await fetch("/publish_product", { method: "POST", body: data });
+            var result = await response.json();
+            document.getElementById("result").innerText = "code=" + result.code + "，msg=" + result.msg;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+{
+	"id": "51c3d30a-8c09-42d7-8d30-790dea14dff7",
+	"name": "New Environment",
+	"values": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:5000",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "username",
+			"value": "huang_test_1025",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "password",
+			"value": "123456",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "email",
+			"value": "t1025@school.edu",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "phone",
+			"value": "13800131025",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "product_id",
+			"value": "101",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "quantity",
+			"value": "1",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"color": null,
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2026-10-15T02:23:13.946Z",
+	"_postman_exported_using": "Postman/12.32.0"
+}

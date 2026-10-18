@@ -1,0 +1,221 @@
+{
+  "info": {
+    "_postman_id": "3563b626-1007-475b-b586-e80c45932165",
+    "name": "campus_market",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58359881",
+    "_collection_link": "https://go.postman.co/collection/58359881-3563b626-1007-475b-b586-e80c45932165?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "注册",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function(){\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"业务 code 为 0\", function(){\r\n    pm.expect(pm.response.json().code).to.eql(0);\r\n});\r\npm.test(\"msg包含注册成功\",function(){\r\n    pm.expect(pm.response.json().msg).to.include(\"注册成功\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "{{username}}"
+            },
+            {
+              "key": "password",
+              "value": "{{password}}"
+            },
+            {
+              "key": "email",
+              "value": "{{email}}"
+            },
+            {
+              "key": "phone",
+              "value": "{{phone}}"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "登录",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"业务 code 为 0\", function () {\r\n    pm.expect(pm.response.json().code).to.eql(0);\r\n});\r\npm.test(\"msg包含登录成功\",function(){\r\n    pm.expect(pm.response.json().msg).to.include(\"登录成功\");\r\n});\r\nvar msg = pm.response.json().msg;\r\nvar user_id = msg.split(\"：\") [1];\r\npm.collectionVariables.set(\"user_id\", user_id);\r\npm.test(\"user_id 已提取\", function () {\r\npm.expect(user_id).to.not.eql(undefined);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "{{username}}"
+            },
+            {
+              "key": "password",
+              "value": "{{password}}"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "发布商品",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"业务 code 为 0\", function () {\r\n    pm.expect(pm.response.json().code).to.eql(0);\r\n});\r\npm.test(\"msg包含发布成功\",function(){\r\n    pm.expect(pm.response.json().msg).to.include(\"发布成功\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "title",
+              "value": "高数教材 "
+            },
+            {
+              "key": "description",
+              "value": "九成新"
+            },
+            {
+              "key": "price",
+              "value": "30"
+            },
+            {
+              "key": "category",
+              "value": "教材"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/publish_product",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "publish_product"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "下单",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"业务 code 为 0\", function () {\r\n    pm.expect(pm.response.json().code).to.eql(0);\r\n});\r\npm.test(\"msg包含下单成功\",function(){\r\n    pm.expect(pm.response.json().msg).to.include(\"下单成功\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "product_id",
+              "value": "{{product_id}}"
+            },
+            {
+              "key": "quantity",
+              "value": "1"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/create_order",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "create_order"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": ""
+    },
+    {
+      "key": "email",
+      "value": ""
+    },
+    {
+      "key": "username",
+      "value": ""
+    },
+    {
+      "key": "password",
+      "value": ""
+    },
+    {
+      "key": "phone",
+      "value": ""
+    },
+    {
+      "key": "product_id",
+      "value": ""
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    }
+  ]
+}

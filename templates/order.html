@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>下单 - 校园二手市场</title>
+    <style>
+        body { font-family: "微软雅黑"; margin: 40px; }
+        input { margin: 5px 0; }
+        table { border-collapse: collapse; }
+        td, th { border: 1px solid #999; padding: 4px 10px; }
+        #result { margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <h2>下单</h2>
+    <h3>在售商品列表</h3>
+    <table id="product-table">
+        <tr><th>商品ID</th><th>商品名</th><th>价格</th></tr>
+        <tbody id="product-list"></tbody>
+    </table>
+    <h3>填单</h3>
+    <form onsubmit="submitOrder(); return false;">
+        <p>商品ID：<input type="text" id="product_id"></p>
+        <p>数量：<input type="text" id="quantity"></p>
+        <button id="order-btn">下单</button>
+    </form>
+    <div id="result"></div>
+    <p><a href="/">返回首页</a></p>
+    <script>
+        async function loadProducts() {
+            var response = await fetch("/products");
+            var result = await response.json();
+            var rows = "";
+            for (var i = 0; i < result.data.length; i++) {
+                rows = rows + "<tr><td>" + result.data[i].product_id + "</td><td>" + result.data[i].title + "</td><td>" + result.data[i].price + "</td></tr>";
+            }
+            document.getElementById("product-list").innerHTML = rows;
+        }
+        async function submitOrder() {
+            var data = new URLSearchParams();
+            data.append("product_id", document.getElementById("product_id").value);
+            data.append("quantity", document.getElementById("quantity").value);
+            var response = await fetch("/create_order", { method: "POST", body: data });
+            var result = await response.json();
+            document.getElementById("result").innerText = "code=" + result.code + "，msg=" + result.msg;
+        }
+        loadProducts();
+    </script>
+</body>
+</html>
