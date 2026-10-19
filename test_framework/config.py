@@ -19,8 +19,8 @@ USER_1015 = "huang_test_1015"   # 接口锚点/DDT；uid 必须=126
 # 重跑前换成没用过的号
 REG_DDT     = {"username": "huang_test_1029", "password": "123456", "email": "t1029@school.edu", "phone": "13800131029"}  # ddt_test
 REG_CHAIN   = {"username": "huang_test_1030", "password": "123456", "email": "t1030@school.edu", "phone": "13800131030"}  # full_chain_test
-REG_PROJECT = {"username": "huang_test_1033", "password": "123456", "email": "t1033@school.edu", "phone": "13800131033"}  # project_test 20条
-REG_WEB     = {"username": "huang_test_1032", "password": "123456", "email": "t1032@school.edu", "phone": "13800131032"}  # test_register_po
+REG_PROJECT = {"username": "huang_test_1036", "password": "123456", "email": "t1036@school.edu", "phone": "13800131036"}  # project_test 20条
+REG_WEB     = {"username": "huang_test_1037", "password": "123456", "email": "t1037@school.edu", "phone": "13800131037"}  # test_register_po
 
 # 商品id和价格
 PRODUCT_ID    = 101
