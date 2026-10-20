@@ -1,6 +1,7 @@
 from pages.login_page import LoginPage
 from pages.publish_page import PublishPage
 import pytest
+import config
 
 @pytest.mark.parametrize(
     "title, description, price, category, expected_code",
@@ -18,7 +19,7 @@ import pytest
 def test_publish_po(driver, title, description, price, category, expected_code):
     login = LoginPage(driver)
     login.open_page()
-    login.login("huang_test_1001", "123456")
+    login.login(config.USER_1001, config.PASSWORD)
 
     pub = PublishPage(driver)
     pub.open_page()

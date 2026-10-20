@@ -2,12 +2,12 @@ import pytest, requests
 from api_log import req
 import config
 
-BASE = "http://127.0.0.1:5000"
-MOCK = "http://127.0.0.1:5001"
+BASE = config.BASE_URL
+MOCK = config.MOCK_URL
 USER = config.REG_PROJECT
 PUBLISH = {"title": "PROBE_1023_练习", "description": "描述", "price": 50, "category": "其他"}
-PRODUCT_ID = 101         # 商品id101
-PRODUCT_PRICE = 99.0     # 价格99元
+PRODUCT_ID = config.PRODUCT_ID
+PRODUCT_PRICE = config.PRODUCT_PRICE
 
 @pytest.fixture
 def login():
@@ -25,13 +25,13 @@ def check(r, code, msg_kw):
 
 # 注册
 REGISTER_CASES = [
-    (USER, 0, "注册成功"),
-    ({**USER, "username": ""}, 1, "用户名不能为空"),
-    ({**USER, "username": "x"*17}, 1, "用户名过长"),
-    ({**USER, "password": ""}, 1, "密码不能为空"),
-    (USER, 1, "已存在"),
+    pytest.param(USER, 0, "注册成功",id="正例"),
+    pytest.param({**USER, "username": ""}, 1, "用户名不能为空",id="空用户名"),
+    pytest.param({**USER, "username": "x"*17}, 1, "用户名过长",id="用户名过长"),
+    pytest.param({**USER, "password": ""}, 1, "密码不能为空",id="空密码"),
+    pytest.param(USER, 1, "已存在",id="重复"),
 ]
-@pytest.mark.parametrize("data,code,msg_kw", REGISTER_CASES, ids=["正例", "空用户名", "用户名过长", "空密码", "重复"])
+@pytest.mark.parametrize("data,code,msg_kw", REGISTER_CASES)
 def test_register(data, code, msg_kw):
     check(req("POST", f"{BASE}/register", data=data), code, msg_kw)
 
@@ -39,12 +39,12 @@ def test_register(data, code, msg_kw):
 
 # 登录
 LOGIN_CASES = [
-    (USER["username"], USER["password"], 0, "登录成功"),
-    ("huang_test_9998", "123456", 1, "用户名不存在"),
-    (USER["username"], "654321", 1, "密码错误"),
-    (USER["username"], "", 1, "密码不能为空"),
+    pytest.param(USER["username"], USER["password"], 0, "登录成功",id="正例"),
+    pytest.param("huang_test_9998", "123456", 1, "用户名不存在",id="假号"),
+    pytest.param(USER["username"], "654321", 1, "密码错误",id="错密"),
+    pytest.param(USER["username"], "", 1, "密码不能为空",id="空密码"),
 ]
-@pytest.mark.parametrize("username,password,code,msg_kw", LOGIN_CASES, ids=["正例", "假号", "错密密", "空密码"])
+@pytest.mark.parametrize("username,password,code,msg_kw", LOGIN_CASES)
 def test_login(username, password, code, msg_kw):
     check(req("POST", f"{BASE}/login", data={"username": username, "password": password}), code, msg_kw)
 
@@ -52,13 +52,13 @@ def test_login(username, password, code, msg_kw):
 
 # 发布
 PUBLISH_CASES = [
-    ({**PUBLISH, "title": "   "}, 1, "请输入商品名"),
-    ({**PUBLISH, "title": "PROBE_1013_空描述", "description": ""}, 0, "发布成功"),
-    ({**PUBLISH, "price": 0}, 1, "价格不能为零"),
-    ({**PUBLISH, "price": -1}, 1, "价格不能为负"),
-    ({**PUBLISH, "price": 30.5}, 1, "请输入有效价格"),
+    pytest.param({**PUBLISH, "title": "   "}, 1, "请输入商品名",id="空标题"),
+    pytest.param({**PUBLISH, "title": "PROBE_1013_空描述", "description": ""}, 0, "发布成功",id="空描述过"),
+    pytest.param({**PUBLISH, "price": 0}, 1, "价格不能为零",id="价格零"),
+    pytest.param({**PUBLISH, "price": -1}, 1, "价格不能为负",id="价格负"),
+    pytest.param({**PUBLISH, "price": 30.5}, 1, "请输入有效价格",id="小数"),
 ]
-@pytest.mark.parametrize("data,code,msg_kw", PUBLISH_CASES, ids=["空标题", "空描述放行", "价格零", "价格负", "小数"])
+@pytest.mark.parametrize("data,code,msg_kw", PUBLISH_CASES)
 def test_publish(login, data, code, msg_kw):
     check(req("POST", f"{BASE}/publish_product", session=login, data=data), code, msg_kw)
 
@@ -66,11 +66,11 @@ def test_publish(login, data, code, msg_kw):
 
 # ---------- 下单 4条 ----------
 ORDER_CASES = [
-    (1, 0, "下单成功"),
-    (0, 1, "数量不能为零"),
-    (100, 1, "数量过多"),
+    pytest.param(1, 0, "下单成功",id="正例"),
+    pytest.param(0, 1, "数量不能为零",id="数量零"),
+    pytest.param(100, 1, "数量过多",id="超99"),
 ]
-@pytest.mark.parametrize("quantity,code,msg_kw", ORDER_CASES, ids=["正例", "数量零", "超99"])
+@pytest.mark.parametrize("quantity,code,msg_kw", ORDER_CASES)
 def test_order(login, quantity, code, msg_kw):
     r = req("POST", f"{BASE}/create_order", session=login,  data={"product_id": PRODUCT_ID, "quantity": quantity})
     check(r, code, msg_kw)

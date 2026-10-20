@@ -1,10 +1,11 @@
 from pages.login_page import LoginPage
 from pages.order_page import OrderPage
+import config
 
 def test_order_po(driver):
     login = LoginPage(driver)
     login.open_page()
-    login.login("huang_test_1001", "123456")
+    login.login(config.USER_1001, config.PASSWORD)
 
     order = OrderPage(driver)
     order.open_page()

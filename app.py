@@ -1,8 +1,26 @@
+import os
 import pymysql
 from flask import Flask, request, jsonify, session, render_template
 
 app = Flask("campus_market")
 app.secret_key = "campus_market_666"
+
+# ── 数据库连接：没设就用下面的默认值 ──
+DB_HOST = os.environ.get("DB_HOST", "localhost")
+DB_USER = os.environ.get("DB_USER", "root")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "Campus123!")
+DB_NAME = os.environ.get("DB_NAME", "campus_flea_market")
+
+
+def get_conn():
+    return pymysql.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME,
+        charset="utf8mb4"
+    )
+
 
 @app.route("/")
 def home():
@@ -64,13 +82,7 @@ def register():
 
         return jsonify({"code": 1, "msg": "手机号不能为空"})
 
-    conn = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="Campus123!",
-        database="campus_flea_market",
-        charset="utf8mb4"
-    )
+    conn = get_conn()
 
     cursor = conn.cursor()
     sql = "INSERT INTO users (username,password,email,phone) VALUES (%s, %s, %s, %s);"
@@ -106,13 +118,7 @@ def login():
     if password is None or password == "":
         return jsonify({"code": 1, "msg": "密码不能为空"})
 
-    conn = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="Campus123!",
-        database="campus_flea_market",
-        charset="utf8mb4"
-    )
+    conn = get_conn()
 
     cursor = conn.cursor()
     sql = "SELECT user_id, password FROM users WHERE username = %s;"
@@ -169,13 +175,7 @@ def publish_product():
 
     if not price.isdigit():
         return jsonify({"code": 1, "msg": "请输入有效价格"})
-    conn = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="Campus123!",
-        database="campus_flea_market",
-        charset="utf8mb4"
-    )
+    conn = get_conn()
     cursor = conn.cursor()
     sql = "INSERT INTO products (seller_id, title, description, price, category) VALUES (%s, %s, %s, %s, %s);"
 
@@ -198,13 +198,7 @@ def create_order():
         return jsonify({"code": 1, "msg": "请先登录！"})
 
     product_id = request.form.get("product_id")
-    conn = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="Campus123!",
-        database="campus_flea_market",
-        charset="utf8mb4"
-    )
+    conn = get_conn()
     cursor = conn.cursor()
 
     try:
@@ -246,13 +240,7 @@ def create_order():
 
 @app.route("/products", methods=["GET"])
 def get_products():
-    conn = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="Campus123!",
-        database="campus_flea_market",
-        charset="utf8mb4"
-    )
+    conn = get_conn()
     cursor = conn.cursor()
     sql = "SELECT product_id, title, price, category FROM products WHERE status = 1 ORDER BY product_id DESC;"
     cursor.execute(sql)
@@ -273,13 +261,7 @@ def get_orders():
     if user_id is None:
         return jsonify({"code": 1, "msg": "请先登录！"})
 
-    conn = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="Campus123!",
-        database="campus_flea_market",
-        charset="utf8mb4"
-    )
+    conn = get_conn()
     cursor = conn.cursor()
     sql = "SELECT o.order_id, p.title, o.quantity, o.total_price, o.created_at FROM orders o JOIN products p ON o.product_id = p.product_id WHERE o.buyer_id = %s ORDER BY o.created_at DESC;"
     cursor.execute(sql, (user_id,))

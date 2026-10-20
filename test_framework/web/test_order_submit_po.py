@@ -14,7 +14,7 @@ import config
 def test_order_submit_po(driver, quantity, expected_code, expected_msg):
     login = LoginPage(driver)
     login.open_page()
-    login.login("huang_test_1001", "123456")
+    login.login(config.USER_1001, config.PASSWORD)
 
     page = OrderSubmitPage(driver)
     page.open_page()

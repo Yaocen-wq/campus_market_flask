@@ -1,7 +1,8 @@
 import allure
+import config
 from api_log import req
 
-BASE = "http://127.0.0.1:5001"   # Mock支付服务
+BASE = config.MOCK_URL   
 
 @allure.title("支付回调-正常")
 @allure.description("期望 code=0 + msg含有成功")

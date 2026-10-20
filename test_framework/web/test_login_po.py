@@ -1,7 +1,6 @@
 import pytest
 from pages.login_page import LoginPage
 import config
-import random
 
 @pytest.mark.parametrize(
     "username, password, expected_code",
