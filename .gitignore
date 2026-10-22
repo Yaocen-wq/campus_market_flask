@@ -8,3 +8,4 @@ test_framework/logs/
 test_framework/allure-results/
 test_framework/web/screenshots/
 selenium_learn/
+ci.cnf
