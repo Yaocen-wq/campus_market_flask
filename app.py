@@ -3,12 +3,12 @@ import pymysql
 from flask import Flask, request, jsonify, session, render_template
 
 app = Flask("campus_market")
-app.secret_key = "campus_market_666"
+app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
 
-# ── 数据库连接：没设就用下面的默认值 ──
+
 DB_HOST = os.environ.get("DB_HOST", "localhost")
 DB_USER = os.environ.get("DB_USER", "root")
-DB_PASSWORD = os.environ.get("DB_PASSWORD", "Campus123!")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
 DB_NAME = os.environ.get("DB_NAME", "campus_flea_market")
 
 

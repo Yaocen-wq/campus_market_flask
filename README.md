@@ -66,7 +66,7 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
 窗口2 flask：
 
     .\.venv\Scripts\activate
-    $env:DB_PASSWORD="你的 root 密码"   # 密码是 "Campus123!" 时不执行这行
+    $env:DB_PASSWORD="你的 root 密码"
     python app.py                        
 
 窗口3 Mock：
