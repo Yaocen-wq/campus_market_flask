@@ -91,13 +91,17 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
 
 ## CI（Jenkins）
 
+Jenkins 构建用的解释器在 `ci\run_api_ci.ps1` 第 4 行指定
+clone 到自己机器后，把这一行改成自己 venv 里 python.exe 的绝对路径
+
 任务 `campus_api_ci` 只配一个构建步骤，执行 `ci\run_api_ci.ps1`。
 脚本做五件事：杀残留的 flask/mock → 重置数据库 → 起 flask(5000) 和 mock(5001) 并轮询端口
 → 跑 `test_framework\api` 29 条 → 结束时再杀一次、打印端口是否空闲。
 产物 `allure-results` 复制到 Jenkins 工作区后归档，可在构建页面下载。
 
 Jenkins 侧配置
-`powershell -NoProfile -ExecutionPolicy Bypass -File <仓库路径>\ci\run_api_ci.ps1`；
+
+`powershell -NoProfile -ExecutionPolicy Bypass -File <Jenkins 任务在本机上的路径>\ci\run_api_ci.ps1`；
 构建后操作 Archive the artifacts，Files to archive 写 `allure-results\**`
 
 Freestyle（未用 Jenkinsfile，Pipeline 插件未装上）
@@ -156,3 +160,4 @@ web/ 那个管开关浏览器和截图。
 
 - **全链路** 从头到尾用一个 Session：注册、登录、发布、取商品 id、下单。
 登录用的是刚刚注册的账号，所以注册要是挂了，后面也会挂，不会出现注册失败但整条还是绿的
+<!-- poll test -->
