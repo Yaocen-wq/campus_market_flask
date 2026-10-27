@@ -19,8 +19,9 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
     ├─ pytest.ini                   标记项目根目录
     ├─ requirements.txt             依赖版本
     ├─ postman/                     postman调试用的存档
+    ├─ Jenkinsfile                  CI 流水线定义
     ├─ test-docs/                   手工测试
-    │  ├─ 手工用例.xlsx             85 条手工用例
+    │  ├─ 手工用例.xlsx              85 条手工用例
     │  └─ bug-reports/              15 份 bug 报告
     ├─ ci/
     │  └─ run_api_ci.ps1            Jenkins 用的 CI 脚本
@@ -45,6 +46,8 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
 
 日志、报告、截图都是代码自动生成，没放仓库
 手工测试的成果在 test-docs/ 85 条用例 + 15 份 bug 报告
+
+---
 
 ## 怎么跑
 
@@ -86,25 +89,30 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
     allure serve test_framework\allure-results                                 # 临时看
     allure generate test_framework\allure-results -o allure-report --clean     # 静态报告
 
-第一次跑不用改， 第二次跑之前要把 `test_framework\config.py` 里的 `REG_*` 换成没用过的账号
-（用 Jenkins 跑时不用管这个：CI 脚本每次构建都会重置数据库）
+第一次跑不用改， 第二次跑之前要把 `test_framework\config.py` 里的 `REG_*` 换成没用过的账号 （用 Jenkins 跑时不用换）
 
-## CI（Jenkins）
+## CI（Jenkins，可选）
 
-Jenkins 构建用的解释器在 `ci\run_api_ci.ps1` 第 4 行指定
-clone 到自己机器后，把这一行改成自己 venv 里 python.exe 的绝对路径
+1.建 ci.cnf 把 password 换成自己的 MySQL root 密码
 
-任务 `campus_api_ci` 只配一个构建步骤，执行 `ci\run_api_ci.ps1`。
-脚本做五件事：杀残留的 flask/mock → 重置数据库 → 起 flask(5000) 和 mock(5001) 并轮询端口
-→ 跑 `test_framework\api` 29 条 → 结束时再杀一次、打印端口是否空闲。
-产物 `allure-results` 复制到 Jenkins 工作区后归档，可在构建页面下载。
+    [client]
+    user=root
+    password=你的密码
+    default-character-set=utf8mb4
+    保存在 C:\ProgramData\Jenkins\.jenkins\
 
-Jenkins 侧配置
+2.把 ci\run_api_ci.ps1 第 4 行 $Py，改成本机 venv 里 python.exe 的绝对路径
 
-`powershell -NoProfile -ExecutionPolicy Bypass -File <Jenkins 任务在本机上的路径>\ci\run_api_ci.ps1`；
-构建后操作 Archive the artifacts，Files to archive 写 `allure-results\**`
+3.打开 Jenkins 网页
+    
+    New Item → 随便起名 → 选 Pipeline → Definition 选 Pipeline script from SCM → 
+    SCM 选 Git → 填自己需要提交的 gitHub 仓库 URL → Branch 填 */main → 
+    Script Path 填 Jenkinsfile → 保存
 
-Freestyle（未用 Jenkinsfile，Pipeline 插件未装上）
+之后可以手动点 Build Now 也可以让 poll SCM 定时检查代码，有新提交自动构建。
+产物 allure-results 和构建一起归档，在构建页可以下载
+
+---
 
 ## 49 条是什么
 
@@ -117,7 +125,6 @@ Freestyle（未用 Jenkinsfile，Pipeline 插件未装上）
 | api/test_mock_pay.py | 2 | 支付 Mock |
 | web/ 下 6 个文件 | 20 | 6 个页面，PO 写法 |
 
----
 2026.10.18 在 Python 3.12.10 + selenium 4.51.0 上跑的结果：
 
 | 跑的哪个 | 结果 | 耗时      |
@@ -130,6 +137,8 @@ Freestyle（未用 Jenkinsfile，Pipeline 插件未装上）
 49 条是单独确认过的。跑 web 之前我把自己电脑上的驱动缓存整个挪走了，
 所以那次是先下载再跑的，下下来是 155.0.4283.62。
 这么做就是想确认一下：别人 clone 下来，是不是也能跑
+
+---
 
 ## 几个纠结过的点
 
