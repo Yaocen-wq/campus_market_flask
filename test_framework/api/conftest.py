@@ -20,8 +20,7 @@ def pytest_runtest_makereport(item, call):
         if not api_log.RECORDS:
             return
         text = f"用例：{item.name}\n结果：{report.outcome}\n\n" + "\n\n".join(api_log.RECORDS)
-        allure.attach(text, name=f"接口证据_{item.name}",
-                      attachment_type=allure.attachment_type.TEXT)
+        allure.attach(text, name=f"接口证据_{item.name}",attachment_type=allure.attachment_type.TEXT)
         log.info(f"EVIDENCE {item.name} -> {len(api_log.RECORDS)} 条")
     except Exception as e:
         log.info(f"EVIDENCE-FAIL {item.name}: {e}")

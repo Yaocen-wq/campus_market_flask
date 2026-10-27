@@ -1,9 +1,9 @@
 $ErrorActionPreference = 'Stop'
 
-$Root   = 'D:\huang\mysoftware\pycode\campus_market_flask'
-$Py     = Join-Path $Root '.venv312\Scripts\python.exe'
+$Root   = if ($env:WORKSPACE) { $env:WORKSPACE } else { 'D:\huang\mysoftware\pycode\campus_market_flask' }
+$Py     = 'D:\huang\mysoftware\pycode\campus_market_flask\.venv312\Scripts\python.exe'
 $Mysql  = 'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe'
-$Cnf    = Join-Path $Root 'ci.cnf'
+$Cnf    = if ($env:WORKSPACE) { 'C:\ProgramData\Jenkins\.jenkins\ci.cnf' } else { 'D:\huang\mysoftware\pycode\campus_market_flask\ci.cnf' }
 $Sql    = Join-Path $Root 'create_tables.sql'
 $Req    = Join-Path $Root 'requirements.txt'
 $LogDir = Join-Path $Root 'test_framework\logs'

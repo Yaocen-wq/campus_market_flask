@@ -16,12 +16,14 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
     ├─ app.py                       被测的 Flask 后端
     ├─ templates/                   被测的网页
     ├─ create_tables.sql            建库、建表、插固定账号
-    ├─ pytest.ini                   关掉中文用例名转义的文件
+    ├─ pytest.ini                   标记项目根目录
     ├─ requirements.txt             依赖版本
     ├─ postman/                     postman调试用的存档
     ├─ test-docs/                   手工测试
     │  ├─ 手工用例.xlsx             85 条手工用例
     │  └─ bug-reports/              15 份 bug 报告
+    ├─ ci/
+    │  └─ run_api_ci.ps1            Jenkins 用的 CI 脚本
     └─ test_framework/
        ├─ config.py                 配置文件
        ├─ conftest.py               确认路径锚 + 记每条用例的结果
@@ -81,11 +83,24 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
 
 5.看报告（要装 Allure 命令行工具）：
 
-    allure serve test_framework\allure-results
+    allure serve test_framework\allure-results                                 # 临时看
+    allure generate test_framework\allure-results -o allure-report --clean     # 静态报告
 
-第一次跑不用改任何东西，数据库是新建的，注册用的号都是空的。
-第二次跑之前要把 `test_framework\config.py` 里的 `REG_*`
-换成没用过的账号，不然注册正例会报“用户名已存在”
+第一次跑不用改， 第二次跑之前要把 `test_framework\config.py` 里的 `REG_*` 换成没用过的账号
+（用 Jenkins 跑时不用管这个：CI 脚本每次构建都会重置数据库）
+
+## CI（Jenkins）
+
+任务 `campus_api_ci` 只配一个构建步骤，执行 `ci\run_api_ci.ps1`。
+脚本做五件事：杀残留的 flask/mock → 重置数据库 → 起 flask(5000) 和 mock(5001) 并轮询端口
+→ 跑 `test_framework\api` 29 条 → 结束时再杀一次、打印端口是否空闲。
+产物 `allure-results` 复制到 Jenkins 工作区后归档，可在构建页面下载。
+
+Jenkins 侧配置
+`powershell -NoProfile -ExecutionPolicy Bypass -File <仓库路径>\ci\run_api_ci.ps1`；
+构建后操作 Archive the artifacts，Files to archive 写 `allure-results\**`
+
+Freestyle（未用 Jenkinsfile，Pipeline 插件未装上）
 
 ## 49 条是什么
 

@@ -9,3 +9,5 @@ test_framework/allure-results/
 test_framework/web/screenshots/
 selenium_learn/
 ci.cnf
+ci/start_dev.ps1
+allure-report/
