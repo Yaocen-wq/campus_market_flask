@@ -28,6 +28,8 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
     └─ test_framework/
        ├─ config.py                 配置文件
        ├─ conftest.py               确认路径锚 + 记每条用例的结果
+       ├─ dashboard.py              Streamlit 看板
+       ├─ fail_report.py            失败分类
        ├─ api/                      接口
        │  ├─ api_log.py             发请求的封装，并记录请求和响应
        │  ├─ conftest.py            每条用例前清记录；挂了把记录贴进报告
@@ -89,9 +91,14 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
     allure serve test_framework\allure-results                                 # 临时看
     allure generate test_framework\allure-results -o allure-report --clean     # 静态报告
 
-第一次跑不用改， 第二次跑之前要把 `test_framework\config.py` 里的 `REG_*` 换成没用过的账号 （用 Jenkins 跑时不用换）
+6.看板（可选）：
 
-## CI（Jenkins，可选）
+    python -m streamlit run test_framework\dashboard.py
+    # 需要跑完测试再执行
+
+第一次跑不用改， 第二次跑之前要把 `test_framework\config.py` 里的 `REG_*` 换成没用过的账号 （用 Jenkins 时不换）
+
+## CI（Jenkins）
 
 1.建 ci.cnf 把 password 换成自己的 MySQL root 密码
 
@@ -134,9 +141,6 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
 | web/ | 20 条过 | 12.10 秒 |
 | full_chain / negative / smoke | 7 条过 | 0.11 秒  |
 
-49 条是单独确认过的。跑 web 之前我把自己电脑上的驱动缓存整个挪走了，
-所以那次是先下载再跑的，下下来是 155.0.4283.62。
-这么做就是想确认一下：别人 clone 下来，是不是也能跑
 
 ---
 
@@ -148,25 +152,26 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
 
 - **页面元素** 元素最开始写在测试函数里，页面一改就得全找一遍。
 后面每个页面单独写成一个类放 `web/pages/`，测试里只剩“打开登录页 →
-登录 → 看结果”，一行找元素的代码都没有。改版了就只动 pages 里的类。
+登录 → 看结果”，如果页面改版就只动 pages 里的类
 
 
 - **页面类继承 `BasePage`** 里面写了 6 个动作：打开网页、找元素、
 输入、点击、读文字、等文字出现。找元素统一加了 10 秒显式等待，没用 sleep。
-`login_page.py` 里定位方法用了id、css、xpath：用户名用 ID、密码用 CSS、
-登录按钮用 XPath，想看看是不是都能跑通。
+`login_page.py` 里定位方法用了id、css、xpath，想看看是不是都能跑通
 
 
 - **失败了怎么查** 接口用例挂了，`api/conftest.py` 会把这条用例发的请求、
-收的响应一起贴到 Allure 报告里；网页用例挂了，`web/conftest.py` 会截图贴进去。
+收的响应一起贴到 Allure 报告里；网页用例挂了，`web/conftest.py` 会截图贴进去
 这样不用再去翻日志猜
 
 
 - **三个conftest** 根目录的是为了让子目录里 import config 能找到，
-以及统一记每条用例过了还是挂了。api/ 那个管清记录、挂证据，
-web/ 那个管开关浏览器和截图。
+以及统一记每条用例过了还是挂了。api 那个管清记录、挂证据，
+web 那个管开关浏览器和截图
 
 
 - **全链路** 从头到尾用一个 Session：注册、登录、发布、取商品 id、下单。
 登录用的是刚刚注册的账号，所以注册要是挂了，后面也会挂，不会出现注册失败但整条还是绿的
-<!-- poll test -->
+
+- **失败汇总** 每次跑完按异常类型、用例函数去分类
+分类的东西写成 fail_summary.md（给人看）和 fail_summary.json（给看板读）
