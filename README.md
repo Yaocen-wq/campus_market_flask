@@ -88,8 +88,9 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
 
 5.看报告（要装 Allure 命令行工具）：
 
-    allure serve test_framework\allure-results                                 # 临时看
-    allure generate test_framework\allure-results -o allure-report --clean     # 静态报告
+    allure serve test_framework\allure-results                                 # 打开临时报告
+    allure generate test_framework\allure-results -o allure-report --clean     # 生成静态报告
+    allure open allure-report                                                  # 打开静态报告
 
 6.看板（可选）：
 
@@ -106,7 +107,8 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
     user=root
     password=你的密码
     default-character-set=utf8mb4
-    保存在 C:\ProgramData\Jenkins\.jenkins\
+    放在 Jenkins 主目录（JENKINS_HOME）路径默认是 C:\ProgramData\Jenkins\.jenkins\
+    如果 Jenkins 主目录（JENKINS_HOME）路径有变动或者想放在其他地方就需要改run_api_ci.ps1 里 $Cnf 指定路径那一行
 
 2.把 ci\run_api_ci.ps1 第 4 行 $Py，改成本机 venv 里 python.exe 的绝对路径
 
@@ -116,7 +118,7 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
     SCM 选 Git → 填自己需要提交的 gitHub 仓库 URL → Branch 填 */main → 
     Script Path 填 Jenkinsfile → 保存
 
-之后可以手动点 Build Now 也可以让 poll SCM 定时检查代码，有新提交自动构建。
+之后可以手动点 Build Now 也可以让 poll SCM 定时检查代码(1.每五分钟检查 2.需要先手动构建一次之后就不用管了)有新提交自动构建。
 产物 allure-results 和构建一起归档，在构建页可以下载
 
 ---
