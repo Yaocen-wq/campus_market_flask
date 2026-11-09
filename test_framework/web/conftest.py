@@ -32,9 +32,9 @@ def pytest_runtest_makereport(item, call):
         os.makedirs(config.SHOT_DIR, exist_ok=True)
         date = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         err = "fail"
-        crash = getattr(report.longrepr, "reprcrash", None)
-        if crash is not None:
-            err = crash.message.split(":")[0].strip()
+        if report.failed and call.excinfo is not None:
+            err = call.excinfo.type.__name__
+
         shot = os.path.join(config.SHOT_DIR, f"{date}_{item.name}_{err}.png")
 
     # 保存+allure报告
