@@ -11,6 +11,7 @@ def get_logger(name="test"):
 
     if not logger.handlers:
         logger.setLevel(logging.INFO)
+        logger.propagate = False
         fh = logging.FileHandler(LOG_FILE, encoding="utf-8")
         fh.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
         logger.addHandler(fh)

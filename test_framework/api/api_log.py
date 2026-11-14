@@ -11,8 +11,8 @@ def clear_records():
 def req(method, url, session=None, **kwargs):
     who = session if session is not None else requests
     shown = kwargs.get("data", kwargs.get("params"))
-    log.info(f"REQ {method} {url} data={shown}")
-    RECORDS.append(f"REQ  {method} {url}\ndata={shown}")
+    log.info(f"REQ {method} {url} payload={shown}")
+    RECORDS.append(f"REQ  {method} {url}\npayload={shown}")
     r = who.request(method, url, **kwargs)
     text = r.text
     try:

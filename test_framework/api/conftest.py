@@ -21,6 +21,7 @@ def pytest_runtest_makereport(item, call):
             return
         text = f"用例：{item.name}\n结果：{report.outcome}\n\n" + "\n\n".join(api_log.RECORDS)
         allure.attach(text, name=f"接口证据_{item.name}",attachment_type=allure.attachment_type.TEXT)
-        log.info(f"EVIDENCE {item.name} -> {len(api_log.RECORDS)} 条")
+        n_req = sum(1 for r in api_log.RECORDS if r.startswith("REQ"))
+        log.info(f"EVIDENCE {item.name} -> 请求 {n_req} 个")
     except Exception as e:
         log.info(f"EVIDENCE-FAIL {item.name}: {e}")

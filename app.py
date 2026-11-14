@@ -212,7 +212,11 @@ def create_order():
 
         if status != 1:
             return jsonify({"code": 1, "msg": "该商品已下架，无法购买"})
-        quantity = int(request.form.get("quantity"))
+        raw_quantity = request.form.get("quantity")
+        try:
+            quantity = int(raw_quantity)
+        except (TypeError, ValueError):
+            return jsonify({"code": 1, "msg": "请输入有效数量"})
 
         if quantity < 0:
             return jsonify({"code": 1, "msg": "数量不能为负"})
