@@ -1,16 +1,23 @@
+import os
 import pytest
+import yaml
 from pages.login_page import LoginPage
 import config
 
-@pytest.mark.parametrize(
-    "username, password, expected_code, expected_msg",
-    [
-        pytest.param(config.USER_1003, "123456", "0", "登录成功", id="login-1"),
-        pytest.param(config.USER_1003, "wrong_pwd_999", "1", "密码错误", id="login-2"),
-        pytest.param("not_exist_9527", "any_pwd_123", "1", "用户名不存在", id="login-3"),
-        pytest.param(" ", " ", "1", "用户名不能为空", id="login-4"),
-    ]
-)
+DATA = os.path.join(config.ROOT_DIR, "data", "login.yaml")
+
+with open(DATA, encoding="utf-8") as f:
+    RAW = yaml.safe_load(f)["cases"]
+
+def _case(c):
+    skip = c.get("skip")
+    return pytest.param(c["username"], c["password"], c["expected_code"], c["expected_msg"],
+        id=c["id"],
+        marks=pytest.mark.skip(reason=skip) if skip else ()
+    )
+CASES = [_case(c) for c in RAW]
+
+@pytest.mark.parametrize("username, password, expected_code, expected_msg", CASES)
 def test_login_po(driver, username, password, expected_code, expected_msg):
     page = LoginPage(driver)
     page.open_page()
