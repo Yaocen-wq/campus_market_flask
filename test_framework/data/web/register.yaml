@@ -1,0 +1,22 @@
+cases:
+  - id: reg-1
+    username: huang_test_1037
+    password: "123456"
+    email: t1037@school.edu
+    phone: "13800131037"
+    expected_code: "0"
+    expected_msg: 注册成功
+  - id: reg-2
+    username: huang_test_1005
+    password: "123456"
+    email: t1005@school.edu
+    phone: "13800131005"
+    expected_code: "1"
+    expected_msg: 注册失败
+  - id: reg-3
+    username: " "
+    password: " "
+    email: t1005@school.edu
+    phone: "13800131005"
+    expected_code: "1"
+    expected_msg: 用户名不能为空

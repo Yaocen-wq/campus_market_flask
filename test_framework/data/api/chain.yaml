@@ -1,0 +1,22 @@
+user:
+  username: huang_test_1040
+  password: "123456"
+  email: t1040@school.edu
+  phone: "13800131040"
+
+publish:
+  title: 测试商品
+  price: "40"
+  description: 测试用
+  category: 其他
+
+order:
+  quantity: "1"
+
+expect:
+  status_ok: 200
+  code_ok: 0
+  register_msg: 注册成功
+  login_msg: 登录成功
+  publish_msg: 发布成功
+  order_msg: 下单成功

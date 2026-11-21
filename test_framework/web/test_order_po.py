@@ -1,12 +1,16 @@
 from pages.login_page import LoginPage
 from pages.order_page import OrderPage
-import config
+from utils.data_loader import load_yaml
+
+FIXTURES = load_yaml("fixtures.yaml")
+OPERATOR = FIXTURES["accounts"]["web_operator"]
+DATA = load_yaml("web/order.yaml")
 
 def test_order_po(driver):
     login = LoginPage(driver)
     login.open_page()
-    login.login(config.USER_1001, config.PASSWORD)
+    login.login(OPERATOR["username"], OPERATOR["password"])
 
     order = OrderPage(driver)
     order.open_page()
-    assert "请先登录" not in order.driver.page_source
+    assert DATA["expected_absent_text"] not in order.driver.page_source

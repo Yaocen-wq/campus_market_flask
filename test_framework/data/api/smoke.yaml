@@ -1,0 +1,18 @@
+home:
+  expected_status: 200
+
+login_fake:
+  payload:
+    username: huang_test_9999
+    password: "123456"
+  expected_status: 200
+  expected_code: 1
+  expected_msg: 用户名不存在
+
+login_real:
+  payload:
+    username: huang_test_1003
+    password: "123456"
+  expected_status: 200
+  expected_code: 0
+  expected_msg: 登录成功

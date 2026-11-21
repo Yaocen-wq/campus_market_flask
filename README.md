@@ -26,10 +26,25 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
     ├─ ci/
     │  └─ run_api_ci.ps1            Jenkins 用的 CI 脚本
     └─ test_framework/
-       ├─ config.py                 配置文件
+       ├─ config.py                 环境配置：路径、地址、等待时间
        ├─ conftest.py               确认路径锚 + 记每条用例的结果
        ├─ dashboard.py              Streamlit 看板
        ├─ fail_report.py            失败分类
+       ├─ data/                     测试数据
+       │  ├─ fixtures.yaml          前置账号、固定商品（对应 create_tables.sql）
+       │  ├─ api/                   接口用例数据
+       │  │  ├─ smoke.yaml
+       │  │  ├─ negative.yaml
+       │  │  ├─ project.yaml
+       │  │  ├─ chain.yaml
+       │  │  └─ mock_pay.yaml
+       │  └─ web/                   网页用例数据
+       │     ├─ login.yaml
+       │     ├─ register.yaml
+       │     ├─ publish.yaml
+       │     ├─ order_submit.yaml
+       │     ├─ order.yaml
+       │     └─ home.yaml
        ├─ api/                      接口
        │  ├─ api_log.py             发请求的封装，并记录请求和响应
        │  ├─ conftest.py            每条用例前清记录；挂了把记录贴进报告
@@ -41,10 +56,11 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
        │  └─ mock_pay_server.py     自己写的 Mock（5001）
        ├─ web/                      网页
        │  ├─ conftest.py            开关浏览器 + 自动截图
-       │  ├─ pages/                 页面类 + BasePage
+       │  ├─ pages/                 页面类 + BasePage（定位器留在页面类里）
        │  └─ test_*_po.py           6 个文件（20条用例）
-       ├─ utils/logger.py           写日志
-       └─ data/.gitkeep             给以后放数据文件留的位置
+       └─ utils/
+          ├─ logger.py             写日志
+          └─ data_loader.py        读 data/ 下的 YAML
 
 日志、报告、截图都是代码自动生成，没放仓库
 手工测试的成果在 test-docs/ 85 条用例 + 15 份 bug 报告
@@ -97,7 +113,13 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
     python -m streamlit run test_framework\dashboard.py
     # 需要跑完测试再执行
 
-第一次跑不用改， 第二次跑之前要把 `test_framework\config.py` 里的 `REG_*` 换成没用过的账号 （用 Jenkins 时不换）
+第一次跑不用改。第二次跑之前，要把这三个“注册流程新建”的账号换成没用过的：
+
+- `test_framework\data\api\project.yaml` 的 `user`
+- `test_framework\data\api\chain.yaml` 的 `user`
+- `test_framework\data\web\register.yaml` 的 `register_ok`
+
+用 Jenkins 时不换，CI 每次会重建库。
 
 ## CI（Jenkins）
 
@@ -150,6 +172,13 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
 
 - **地址** 一开始我是直接写在用例文件里的，后来想换个端口得翻好几个文件，
 于是后面写到 `config.py` 里统一管理
+
+
+- **配置和数据的边界** 判断标准是“为什么变”：
+  换环境才变的（地址、路径、等待秒数）放 `config.py`；
+  换账号、换输入、换期望才变的（账号、商品、用例参数）放 `data/`；
+  只有逻辑变化才改 `.py`。
+  页面定位器没进 YAML，因为它跟着页面结构走，留在 `web/pages/` 里改起来最短。
 
 
 - **页面元素** 元素最开始写在测试函数里，页面一改就得全找一遍。

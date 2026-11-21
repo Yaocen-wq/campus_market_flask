@@ -1,0 +1,57 @@
+cases:
+  - id: pub-1
+    title: 篮球
+    description: 九成新
+    price: "25"
+    category: 体育器材
+    expected_code: "0"
+    expected_msg: 发布成功
+  - id: pub-2
+    title: ""
+    description: 九成新
+    price: "25"
+    category: 体育器材
+    expected_code: "1"
+    expected_msg: 请输入商品名
+  - id: pub-3
+    title: 篮球
+    description: 九成新
+    price: "100"
+    category: 体育器材
+    expected_code: "0"
+    expected_msg: 发布成功
+  - id: pub-4
+    title: 篮球
+    description: ""
+    price: "25"
+    category: 体育器材
+    expected_code: "0"
+    expected_msg: 发布成功
+  - id: pub-5
+    title: 篮球
+    description: ""
+    price: "0"
+    category: 体育器材
+    expected_code: "1"
+    expected_msg: 价格不能为零
+  - id: pub-6
+    title: 篮球
+    description: ""
+    price: "-1"
+    category: 体育器材
+    expected_code: "1"
+    expected_msg: 价格不能为负
+  - id: pub-7
+    title: 篮球
+    description: ""
+    price: "10000000"
+    category: 体育器材
+    expected_code: "1"
+    expected_msg: 价格过长
+  - id: pub-8
+    title: 篮球
+    description: ""
+    price: abc
+    category: 体育器材
+    expected_code: "1"
+    expected_msg: 请输入有效价格

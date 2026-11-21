@@ -1,0 +1,16 @@
+notify_ok:
+  payload:
+    order_id: "9999"
+    amount: "10.00"
+    trade_no: "MOCK001"
+  expected_status: 200
+  expected_code: 0
+  expected_msg: 成功
+
+notify_missing_param:
+  payload:
+    order_id: "9999"
+    amount: "10.00"
+  expected_status: 200
+  expected_code: 1
+  expected_msg: trade_no

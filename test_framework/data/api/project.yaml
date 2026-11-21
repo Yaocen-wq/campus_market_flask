@@ -1,0 +1,147 @@
+user:
+  username: huang_test_1036
+  password: "123456"
+  email: t1036@school.edu
+  phone: "13800131036"
+
+expect:
+  status: 200
+  
+register_cases:
+  - id: 正例
+    data:
+      username: huang_test_1036
+      password: "123456"
+      email: t1036@school.edu
+      phone: "13800131036"
+    expected_code: 0
+    expected_msg: 注册成功
+  - id: 空用户名
+    data:
+      username: ""
+      password: "123456"
+      email: t1036@school.edu
+      phone: "13800131036"
+    expected_code: 1
+    expected_msg: 用户名不能为空
+  - id: 用户名过长
+    data:
+      username: xxxxxxxxxxxxxxxxx
+      password: "123456"
+      email: t1036@school.edu
+      phone: "13800131036"
+    expected_code: 1
+    expected_msg: 用户名过长
+  - id: 空密码
+    data:
+      username: huang_test_1036
+      password: ""
+      email: t1036@school.edu
+      phone: "13800131036"
+    expected_code: 1
+    expected_msg: 密码不能为空
+  - id: 重复
+    data:
+      username: huang_test_1036
+      password: "123456"
+      email: t1036@school.edu
+      phone: "13800131036"
+    expected_code: 1
+    expected_msg: 已存在
+
+login_cases:
+  - id: 正例
+    username: huang_test_1036
+    password: "123456"
+    expected_code: 0
+    expected_msg: 登录成功
+  - id: 假号
+    username: huang_test_9998
+    password: "123456"
+    expected_code: 1
+    expected_msg: 用户名不存在
+  - id: 错密
+    username: huang_test_1036
+    password: "654321"
+    expected_code: 1
+    expected_msg: 密码错误
+  - id: 空密码
+    username: huang_test_1036
+    password: ""
+    expected_code: 1
+    expected_msg: 密码不能为空
+
+publish_cases:
+  - id: 空标题
+    data:
+      title: "   "
+      description: 描述
+      price: 50
+      category: 其他
+    expected_code: 1
+    expected_msg: 请输入商品名
+  - id: 空描述过
+    data:
+      title: PROBE_1013_空描述
+      description: ""
+      price: 50
+      category: 其他
+    expected_code: 0
+    expected_msg: 发布成功
+  - id: 价格零
+    data:
+      title: PROBE_1023_练习
+      description: 描述
+      price: 0
+      category: 其他
+    expected_code: 1
+    expected_msg: 价格不能为零
+  - id: 价格负
+    data:
+      title: PROBE_1023_练习
+      description: 描述
+      price: -1
+      category: 其他
+    expected_code: 1
+    expected_msg: 价格不能为负
+  - id: 小数
+    data:
+      title: PROBE_1023_练习
+      description: 描述
+      price: 30.5
+      category: 其他
+    expected_code: 1
+    expected_msg: 请输入有效价格
+
+order_cases:
+  - id: 正例
+    quantity: 1
+    expected_code: 0
+    expected_msg: 下单成功
+  - id: 数量零
+    quantity: 0
+    expected_code: 1
+    expected_msg: 数量不能为零
+  - id: 超99
+    quantity: 100
+    expected_code: 1
+    expected_msg: 数量过多
+
+order_no_login:
+  payload:
+    product_id: 101
+    quantity: 1
+  expected_code: 1
+  expected_msg: 请先登录！
+
+mock_notify:
+  payload:
+    order_id: "9999"
+    amount: "10.00"
+    trade_no: "MOCK001"
+  expected_code: 0
+  expected_msg: 成功
+
+orders:
+  expected_code: 0
+  expected_msg: 查询成功

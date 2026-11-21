@@ -1,0 +1,9 @@
+accounts:
+  web_operator:          # Web 下单/发布/提交订单前，先登录这个
+    username: huang_test_1001
+    password: "123456"
+
+products:
+  order_target:          # 下单用例使用的固定商品
+    product_id: 101
+    price: 99.0

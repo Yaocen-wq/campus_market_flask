@@ -1,25 +1,27 @@
+import pytest
 from pages.login_page import LoginPage
 from pages.publish_page import PublishPage
-import pytest
-import config
+from utils.data_loader import load_yaml
 
-@pytest.mark.parametrize(
-    "title, description, price, category, expected_code, expected_msg",
-    [
-        pytest.param("篮球", "九成新", "25", "体育器材", "0", "发布成功",       id="pub-1"),
-        pytest.param("", "九成新", "25", "体育器材", "1", "请输入商品名",   id="pub-2"),
-        pytest.param("篮球", "九成新", "100", "体育器材", "0", "发布成功",       id="pub-3"),
-        pytest.param("篮球", "", "25", "体育器材", "0", "发布成功",       id="pub-4"),
-        pytest.param("篮球", "", "0", "体育器材", "1", "价格不能为零",   id="pub-5"),
-        pytest.param("篮球", "", "-1", "体育器材", "1", "价格不能为负",   id="pub-6"),
-        pytest.param("篮球", "", "10000000", "体育器材", "1", "价格过长",       id="pub-7"),
-        pytest.param("篮球", "", "abc", "体育器材", "1", "请输入有效价格", id="pub-8"),
-    ],
-)
+FIXTURES = load_yaml("fixtures.yaml")
+OPERATOR = FIXTURES["accounts"]["web_operator"]
+RAW = load_yaml("web/publish.yaml")["cases"]
+
+
+def _case(c):
+    skip = c.get("skip")
+    return pytest.param(c["title"], c["description"], c["price"], c["category"],
+                        c["expected_code"], c["expected_msg"], id=c["id"],
+                        marks=pytest.mark.skip(reason=skip) if skip else ()
+                        )
+
+CASES = [_case(c) for c in RAW]
+
+@pytest.mark.parametrize("title, description, price, category, expected_code, expected_msg", CASES)
 def test_publish_po(driver, title, description, price, category, expected_code, expected_msg):
     login = LoginPage(driver)
     login.open_page()
-    login.login(config.USER_1001, config.PASSWORD)
+    login.login(OPERATOR["username"], OPERATOR["password"])
 
     pub = PublishPage(driver)
     pub.open_page()

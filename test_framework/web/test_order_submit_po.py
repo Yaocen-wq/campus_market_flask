@@ -1,24 +1,32 @@
 import pytest
 from pages.login_page import LoginPage
 from pages.order_submit_page import OrderSubmitPage
-import config
+from utils.data_loader import load_yaml
 
-@pytest.mark.parametrize(
-    "quantity, expected_code, expected_msg",
-    [
-        pytest.param("0", "1", "数量不能为零", id="qty-0"),
-        pytest.param("100", "1", "数量过多", id="qty-100"),
-        pytest.param("-1", "1", "数量不能为负", id="qty-neg"),
-    ],
-)
+FIXTURES = load_yaml("fixtures.yaml")
+OPERATOR = FIXTURES["accounts"]["web_operator"]
+PRODUCT_ID = FIXTURES["products"]["order_target"]["product_id"]
+RAW = load_yaml("web/order_submit.yaml")["cases"]
+
+
+def _case(c):
+    skip = c.get("skip")
+    return pytest.param(c["quantity"], c["expected_code"], c["expected_msg"],
+                        id=c["id"],
+                        marks=pytest.mark.skip(reason=skip) if skip else ()
+                        )
+
+CASES = [_case(c) for c in RAW]
+
+@pytest.mark.parametrize("quantity, expected_code, expected_msg", CASES)
 def test_order_submit_po(driver, quantity, expected_code, expected_msg):
     login = LoginPage(driver)
     login.open_page()
-    login.login(config.USER_1001, config.PASSWORD)
+    login.login(OPERATOR["username"], OPERATOR["password"])
 
     page = OrderSubmitPage(driver)
     page.open_page()
-    page.order(str(config.PRODUCT_ID), quantity)
+    page.order(str(PRODUCT_ID), quantity)
     page.wait_text(OrderSubmitPage.RESULT, "code=")
     result = page.get_result()
     assert f"code={expected_code}" in result

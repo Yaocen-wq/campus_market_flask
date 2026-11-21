@@ -1,4 +1,3 @@
-# Web 登录页用例
 cases:
   - id: login-1
     username: huang_test_1003
