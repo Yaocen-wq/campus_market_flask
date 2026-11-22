@@ -99,8 +99,7 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
 
 4.跑测试：
 
-    python -m pytest test_framework\api -v -s --clean-alluredir --alluredir=test_framework\allure-results
-    python -m pytest test_framework\web -v -s --alluredir=test_framework\allure-results
+    python -m pytest test_framework\api test_framework\web -v -s --clean-alluredir --alluredir=test_framework\allure-results
 
 5.看报告（要装 Allure 命令行工具）：
 
@@ -113,13 +112,16 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
     python -m streamlit run test_framework\dashboard.py
     # 需要跑完测试再执行
 
-第一次跑不用改。第二次跑之前，要把这三个“注册流程新建”的账号换成没用过的：
 
-- `test_framework\data\api\project.yaml` 的 `user`
-- `test_framework\data\api\chain.yaml` 的 `user`
-- `test_framework\data\web\register.yaml` 的 `register_ok`
+第二次跑之前，需要改「期望注册成功」的账号和邮箱（换成没用过的）。
+用 Jenkins 时不改，CI 每次会重建库：
 
-用 Jenkins 时不换，CI 每次会重建库。
+- `test_framework\data\api\project.yaml` 的 `register_cases` 第一条（`id: 正例`）
+- `test_framework\data\api\chain.yaml` 的 `user` 
+- `test_framework\data\web\register.yaml` 的 `reg-1`
+
+不想改账号就执行 `create_tables.sql` 重置数据库，改了就不要重置
+
 
 ## CI（Jenkins）
 
@@ -129,8 +131,10 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
     user=root
     password=你的密码
     default-character-set=utf8mb4
-    放在 Jenkins 主目录（JENKINS_HOME）路径默认是 C:\ProgramData\Jenkins\.jenkins\
-    如果 Jenkins 主目录（JENKINS_HOME）路径有变动或者想放在其他地方就需要改run_api_ci.ps1 里 $Cnf 指定路径那一行
+
+放在 Jenkins 主目录（JENKINS_HOME）路径默认是 C:\ProgramData\Jenkins\.jenkins\
+如果 Jenkins 主目录（JENKINS_HOME）路径有变动或者想放在其他地方就需要改 run_api_ci.ps1 里 $Cnf 指定路径那一行
+
 
 2.把 ci\run_api_ci.ps1 第 4 行 $Py，改成本机 venv 里 python.exe 的绝对路径
 
@@ -140,7 +144,7 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
     SCM 选 Git → 填自己需要提交的 gitHub 仓库 URL → Branch 填 */main → 
     Script Path 填 Jenkinsfile → 保存
 
-之后可以手动点 Build Now 也可以让 poll SCM 定时检查代码(1.每五分钟检查 2.需要先手动构建一次之后就不用管了)有新提交自动构建。
+之后可以手动点 Build Now 也可以让 poll SCM 定时检查代码(1.每五分钟检查 2.需要先手动构建一次之后就不用管了有新提交自动构建）
 产物 allure-results 和构建一起归档，在构建页可以下载
 
 ---
@@ -152,33 +156,40 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
 | api/project_test.py | 20 | 注册、登录、发布、下单、查订单、支付回调 |
 | api/negative_test.py | 3 | 反例 |
 | api/smoke_test.py | 3 | 冒烟 |
-| api/full_chain_test.py | 1 | 注册→登录→发布→取 id→下单，一条走完 |
+| api/full_chain_test.py | 1 | 注册→登录→发布→取 id→下单 |
 | api/test_mock_pay.py | 2 | 支付 Mock |
 | web/ 下 6 个文件 | 20 | 6 个页面，PO 写法 |
 
-2026.10.18 在 Python 3.12.10 + selenium 4.51.0 上跑的结果：
+2026.11.21 跑的结果：
 
-| 跑的哪个 | 结果 | 耗时      |
-|---|---|---|
-| api/project_test.py | 20 条过 | 0.26 秒  |
-| api/test_mock_pay.py | 2 条过 | 0.04 秒  |
-| web/ | 20 条过 | 12.10 秒 |
-| full_chain / negative / smoke | 7 条过 | 0.11 秒  |
+| 跑的哪个 | 结果    | 耗时      |
+|------|-------|---------|
+| api  | 29 条过 | 0.87 秒  |
+| web/ | 20 条过 | 17.79 秒 |
+api 的 0.87 秒不含建库和起停服务
 
+## 跑完后的产物
+
+| 产物          | 位置 | 是否进仓库 |
+|-------------|---|-|
+| Allure 原始结果 | test_framework/allure-results/ | 否 |
+| 日志文件        | test_framework/logs/test.log | 否 |
+| web 失败后截图   | test_framework/web/screenshots/ | 否 |
+| 失败汇总 md     | test_framework/logs/fail_summary.md | 否 |
+| 失败汇总 json   | test_framework/logs/fail_summary.json | 否 |
+
+日志文件和失败截图文件夹，不自动清空；
+失败汇总的两个文件每次跑完重写，全部通过时会写成 total=0。
 
 ---
 
-## 几个纠结过的点
+## 备注
 
 - **地址** 一开始我是直接写在用例文件里的，后来想换个端口得翻好几个文件，
 于是后面写到 `config.py` 里统一管理
 
 
-- **配置和数据的边界** 判断标准是“为什么变”：
-  换环境才变的（地址、路径、等待秒数）放 `config.py`；
-  换账号、换输入、换期望才变的（账号、商品、用例参数）放 `data/`；
-  只有逻辑变化才改 `.py`。
-  页面定位器没进 YAML，因为它跟着页面结构走，留在 `web/pages/` 里改起来最短。
+- **数据和代码** 代码通过 `utils/data_loader.py` 去读取 `data/` 里的数据
 
 
 - **页面元素** 元素最开始写在测试函数里，页面一改就得全找一遍。
@@ -186,23 +197,18 @@ Windows11，Python 3.12.10，用 Edge 浏览器，驱动由 selenium 自己去�
 登录 → 看结果”，如果页面改版就只动 pages 里的类
 
 
-- **页面类继承 `BasePage`** 里面写了 6 个动作：打开网页、找元素、
-输入、点击、读文字、等文字出现。找元素统一加了 10 秒显式等待，没用 sleep。
-`login_page.py` 里定位方法用了id、css、xpath，想看看是不是都能跑通
-
-
 - **失败了怎么查** 接口用例挂了，`api/conftest.py` 会把这条用例发的请求、
-收的响应一起贴到 Allure 报告里；网页用例挂了，`web/conftest.py` 会截图贴进去
-这样不用再去翻日志猜
+收的响应一起贴到 Allure 报告里；网页用例挂了，`web/conftest.py` 会截图保存到 `web/screenshots`
 
 
 - **三个conftest** 根目录的是为了让子目录里 import config 能找到，
-以及统一记每条用例过了还是挂了。api 那个管清记录、挂证据，
+以及记每条用例过了还是挂了。api 那个管清记录、挂证据到 Allure 报告，
 web 那个管开关浏览器和截图
 
 
 - **全链路** 从头到尾用一个 Session：注册、登录、发布、取商品 id、下单。
 登录用的是刚刚注册的账号，所以注册要是挂了，后面也会挂，不会出现注册失败但整条还是绿的
 
-- **失败汇总** 每次跑完按异常类型、用例函数去分类
-分类的东西写成 fail_summary.md（给人看）和 fail_summary.json（给看板读）
+
+- **失败汇总** 每次跑完 `fail_report.py` 把失败分类，
+分类的东西写到 `logs/fail_summary.md` 和 `logs/fail_summary.json`

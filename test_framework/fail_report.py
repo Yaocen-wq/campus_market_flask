@@ -55,6 +55,11 @@ def make_summary(terminalreporter):
 
     if not reports:
         _dump_json(0, {}, {})
+
+        out = os.path.join(config.LOG_DIR, "fail_summary.md")
+        with open(out, "w", encoding="utf-8") as f:
+            f.write("失败汇总：全部通过，没有失败用例\n")
+
         terminalreporter.write_line("")
         terminalreporter.write_line("失败汇总：全部通过，没有失败用例")
         return
